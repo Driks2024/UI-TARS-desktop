@@ -13,3 +13,9 @@ scripts/merge-yml/*.yml
 .claude/
 .tarko
 .mcp*_token
+
+# Order Gate
+apps/order-gate/server/prisma/dev.db
+apps/order-gate/uploads/
+apps/order-gate/server/dist/
+apps/order-gate/client/dist/
