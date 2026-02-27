@@ -78,3 +78,12 @@ Order Gate é um sistema automatizado para validação de pedidos em PDF, aplica
 - O banco de dados é um arquivo SQLite local `dev.db` na pasta `server`.
 - Os uploads são salvos na pasta `apps/order-gate/uploads`.
 - O envio de email é simulado no console em ambiente de desenvolvimento.
+
+## Deploy no Netlify (Frontend)
+
+Este projeto contém um arquivo `netlify.toml` configurado para deploy do Frontend.
+
+1.  Conecte este repositório ao Netlify.
+2.  O Netlify detectará automaticamente as configurações.
+3.  **Importante:** O Backend (Node.js + SQLite) **não roda** no Netlify estático. Você precisará hospedar a pasta `apps/order-gate/server` em um serviço como Render, Railway ou Fly.io.
+4.  Após hospedar o backend, atualize o arquivo `netlify.toml` substituindo `https://your-backend-url.com` pela URL real do seu backend.
