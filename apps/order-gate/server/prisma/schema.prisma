@@ -1,0 +1,92 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String?
+  role      String   @default("USER") // ADMIN, USER
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  orders    Order[]
+  auditLogs AuditLog[]
+}
+
+model Order {
+  id               String   @id @default(uuid())
+  originalFilename String
+  fileHash         String   @unique
+  filePath         String
+  status           String   @default("PENDING") // PENDING, APPROVED, REJECTED, EXCEPTION, INCOMPLETE
+  extractedData    String   // JSON string
+  normalizedData   String   // JSON string
+  validationResult String?  // JSON string
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  userId           String
+  user             User     @relation(fields: [userId], references: [id])
+  stamps           Stamp[]
+  evidences        Evidence[]
+}
+
+model Stamp {
+  id        String   @id @default(uuid())
+  status    String   // APPROVED, EXCEPTION
+  hash      String   // File hash of stamped PDF
+  path      String   // Path to stamped PDF
+  createdAt DateTime @default(now())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id])
+}
+
+model Evidence {
+  id        String   @id @default(uuid())
+  path      String   // Path to evidence PDF
+  hash      String   // File hash of evidence PDF
+  createdAt DateTime @default(now())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id])
+}
+
+model PolicyRule {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  type        String   // MIN_PRICE, DISCOUNT, PAYMENT_TERMS, SPECIAL_4801
+  definition  String   // JSON parameters
+  severity    String   // BLOCK, WARNING
+  isActive    Boolean  @default(true)
+  version     Int      @default(1)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model PriceCatalog {
+  id          String   @id @default(uuid())
+  sku         String?  // Exact match if provided
+  prefix      String?  // Prefix match if provided
+  groupName   String?
+  fullPrice   Float?
+  minPrice    Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  action    String
+  details   String?
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  timestamp DateTime @default(now())
+}

@@ -1,0 +1,17 @@
+[build]
+  base = "apps/order-gate/client"
+  publish = "dist"
+  command = "npm install && npm run build"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Proxy API requests to your backend (You need to deploy the backend to Render/Railway/Fly.io)
+# Replace 'https://your-backend-url.com' with the actual URL after deploying the server.
+[[redirects]]
+  from = "/api/*"
+  to = "https://your-backend-url.com/api/:splat"
+  status = 200
+  force = true
