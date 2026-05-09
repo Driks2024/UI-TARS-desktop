@@ -1,0 +1,9 @@
+PyQRCode==1.2.1
+phonenumbers==8.12.25
+requests>=2.31.0
+pdfkit==1.0.0
+beautifulsoup4==4.9.3
+stem>=1.4.0
+fastapi>=0.110.0
+uvicorn[standard]>=0.27.0
+python-multipart>=0.0.9
