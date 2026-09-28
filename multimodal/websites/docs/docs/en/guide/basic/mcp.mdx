@@ -67,4 +67,42 @@ Since connecting to MCP Servers via stdio has inherent latency, starting Agent T
 
 ## Advanced
 
-WIP
+### Remote MCP Servers
+
+Besides local stdio servers, Agent TARS can connect to remote MCP Servers over HTTP. Set `url` (instead of `command`) and the connection uses the [Streamable HTTP](https://modelcontextprotocol.io/specification/2025-03-26/basic/transports#streamable-http) transport by default.
+
+For example, to connect the [Higgsfield](https://higgsfield.ai) MCP Server:
+
+```ts
+// agent-tars.config.ts
+import { defineConfig } from '@agent-tars/interface';
+
+export default defineConfig({
+  // ...
+  mcpServers: {
+    higgsfield: {
+      url: 'https://mcp.higgsfield.ai/mcp',
+      // Optional: extra HTTP headers sent with every request,
+      // e.g. an access token if the server requires authentication.
+      headers: {
+        Authorization: `Bearer ${process.env.HIGGSFIELD_API_KEY}`,
+      },
+    },
+  },
+});
+```
+
+For servers that still use the legacy [HTTP with SSE](https://modelcontextprotocol.io/specification/2024-11-05/basic/transports#http-with-sse) transport, set `type: 'sse'`:
+
+```ts
+mcpServers: {
+  'my-sse-server': {
+    type: 'sse',
+    url: 'http://localhost:8889/sse',
+  },
+},
+```
+
+::: tip
+Agent TARS sends `headers` as-is and doesn't run an interactive OAuth flow. If a remote server requires OAuth, get an access token from the provider first and pass it in the `Authorization` header. Keep secrets in environment variables rather than committing them to your config file.
+:::

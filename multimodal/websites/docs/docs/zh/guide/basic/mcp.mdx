@@ -66,4 +66,42 @@ Draw a self-driving route map for Hangzhou, Shanghai, and Suzhou
 
 ## 进阶
 
-WIP
+### 远程 MCP Servers
+
+除了本地 stdio Server，Agent TARS 还支持通过 HTTP 连接远程 MCP Server。配置 `url`（而不是 `command`）即可，默认使用 [Streamable HTTP](https://modelcontextprotocol.io/specification/2025-03-26/basic/transports#streamable-http) 传输协议。
+
+例如，连接 [Higgsfield](https://higgsfield.ai) MCP Server：
+
+```ts
+// agent-tars.config.ts
+import { defineConfig } from '@agent-tars/interface';
+
+export default defineConfig({
+  // ...
+  mcpServers: {
+    higgsfield: {
+      url: 'https://mcp.higgsfield.ai/mcp',
+      // 可选：每个请求附带的 HTTP Headers，
+      // 例如 Server 需要鉴权时传入访问令牌。
+      headers: {
+        Authorization: `Bearer ${process.env.HIGGSFIELD_API_KEY}`,
+      },
+    },
+  },
+});
+```
+
+对于仍使用旧版 [HTTP with SSE](https://modelcontextprotocol.io/specification/2024-11-05/basic/transports#http-with-sse) 传输协议的 Server，设置 `type: 'sse'`：
+
+```ts
+mcpServers: {
+  'my-sse-server': {
+    type: 'sse',
+    url: 'http://localhost:8889/sse',
+  },
+},
+```
+
+::: tip
+Agent TARS 会原样发送 `headers`，不会执行交互式 OAuth 流程。如果远程 Server 需要 OAuth，请先从服务提供方获取访问令牌，并通过 `Authorization` Header 传入。请将密钥保存在环境变量中，不要提交到配置文件里。
+:::
